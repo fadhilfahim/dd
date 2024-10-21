@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Product Recommendation</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="index">Amazon Product Recommendation</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>  
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="main">Main <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          User
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#signupModal">SignUp</a>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#signinModal">SignIn</a>
+          <!-- <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a> -->
+        </div>
+      </li>
+
+    </ul>
+
+    <form class="form-inline my-2 my-lg-0" action="/main">
+      <input class="form-control mr-sm-2" type="search" name= "prod" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+
+{% if signup_message %}
+<h5 style="margin-left:42%;margin-top:10px;">{{signup_message}}</h5>
+{% endif %}
+
+<!--trending recommendations-->
+<!-- Products -->
+<div class="container mt-5">
+  <h2 class="text-left mb-4">Rating recommendations</h2>
+  
+  <div class="row mt-4">
+    {% for index, product in trending_products.iterrows() %}
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+      <div class="card" style="width: 18rem;">
+          <img src="{{ random_product_image_urls[index] }}" class="card-img-top" alt="{{ product['Name'] }}" style="height: 200px;">
+        <div class="card-body">
+          <h5 class="card-title">{{ truncate(product['Name'],20) }}</h5>
+          <p class="card-text">Brand: {{ product['Brand'] }}</p>
+          <p class="card-text">Rating: {{ product['Rating'] }}</p> 
+          <div class="text-right">
+            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#productModal{{ index }}">More Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="productModal{{ index }}" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="productModalLabel">{{ product['Name'] }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                  <img src="{{ random_product_image_urls[index] }}" class="img-fluid" alt="{{ product['Name'] }}" style="height: 200px;">
+              </div>
+              <div class="col-md-8">
+                <p><strong>Brand:</strong> {{ product['Brand'] }}</p>
+                <!-- Add other product details here -->
+                <!-- Example: -->
+                <p><strong>Review Count:</strong> {{ product['ReviewCount'] }}</p>
+                <p><strong>Rating:</strong> {{ product['Rating'] }}</p>
+                <p><strong>Price:</strong> {{ random_price }}</p> 
+                <!-- Add more details as needed -->
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+
+<!-- Bootstrap modal for sign up -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/signup" method="post">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap modal for sign in -->
+<div class="modal fade" id="signinModal" tabindex="-1" aria-labelledby="signinModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signinModalLabel">Sign In</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/signin" method="post">
+          <div class="mb-3">
+            <label for="signinUsername" class="form-label">Username</label>
+            <input type="text" class="form-control" id="signinUsername" name="signinUsername" required>
+          </div>
+          <div class="mb-3">
+            <label for="signinPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="signinPassword" name="signinPassword" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<!--footer-->
+<footer class="footer bg-dark text-white">
+    <div class="container" style="padding-top:20px;">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <h5>About Us</h5>
+                <p>we are the Amazon team, we create a recommendations System where you can see trending_products, content based when you search for a product using the name of the porduct and when you sign in or signup to see user based recomendation.</p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <h5>Contact Us</h5>
+                <address>
+                    <strong>Amazon</strong><br>
+                    SLIIT, Malabe<br>
+                    Sri Lanka<br>
+                    <i class="fas fa-phone"></i> Phone: +1234567890<br>
+                    <i class="fas fa-envelope"></i> Email: info@amazon.com
+                </address>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <hr class="bg-light">
+                <p class="text-center">© Amazon Recommendation System. All Rights Reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+</body>
+</html>
